@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cn.tedu.dao.CarDao">
+	
+ 	<resultMap id="CarMap"  type="cn.tedu.entity.CarCount"> 
+			<result column="carname" property="type" /> 
+			<result column="counts" property="count" /> 
+	</resultMap> 
+	
+	<resultMap id="ccj"  type="cn.tedu.entity.CityCountJson"> 
+			<result column="carcity" property="name" /> 
+			<result column="carcount" property="value" /> 
+	</resultMap>
+	
+	
+	<select id="findAll" resultType="cn.tedu.entity.Car">
+		select * from car_message_bj  
+	</select>
+
+	<select id="findByType_bj"  resultMap="CarMap">
+		select carname,count(*) counts from car_message_bj GROUP BY carname
+	</select>
+	
+	<select id="findByType_tj"  resultMap="CarMap">
+		select carname,count(*) counts from car_message_tj GROUP BY carname
+	</select>
+	
+		<select id="findByType_sh"  resultMap="CarMap">
+		select carname,count(*) counts from car_message_sh GROUP BY carname
+	</select>
+	
+		<select id="findByType_cq"  resultMap="CarMap">
+		select carname,count(*) counts from car_message_cq GROUP BY carname
+	</select>
+	
+	<select id="findAllFromCity" resultMap="ccj">
+		select * from car_count_china
+	</select>
+	
+	<select id="findAllFromAge00" resultType="cn.tedu.entity.CarOrderByAge">
+		select age.carname , age.count , price.price ,age.age ,price.carinfo,price.img from
+		(select carname , COUNT(*) count ,age 
+		from car_message_age  
+		where age BETWEEN 18 and 19
+		GROUP BY carname 
+		ORDER BY count DESC  limit 5 ) age
+		left JOIN
+		(select carname,price,carinfo,img from car_message_price) price
+		on age.carname=price.carname
+		ORDER BY age.count DESC
+		
+	</select>
+	
+	<select id="findAllFromAge90" resultType="cn.tedu.entity.CarOrderByAge">
+		select age.carname , age.count , price.price ,age.age ,price.carinfo,price.img from
+		(select carname , COUNT(*) count ,age 
+		from car_message_age  
+		where age BETWEEN 20 and 30 
+		GROUP BY carname 
+		ORDER BY count DESC  limit 5 ) age
+		left JOIN
+		(select carname,price,carinfo,img from car_message_price) price
+		on age.carname=price.carname
+		ORDER BY age.count DESC
+	</select>
+	
+	<select id="findAllFromAge80" resultType="cn.tedu.entity.CarOrderByAge">
+		select age.carname , age.count , price.price ,age.age ,price.carinfo,price.img from
+		(select carname , COUNT(*) count ,age 
+		from car_message_age  
+		where age BETWEEN 30 and 40 
+		GROUP BY carname 
+		ORDER BY count DESC  limit 5 ) age
+		left JOIN
+		(select carname,price,carinfo,img from car_message_price) price
+		on age.carname=price.carname
+		ORDER BY age.count DESC
+		</select>
+		
+		<select id="searchAndPrice"  parameterType="cn.tedu.entity.CarSearch"  resultType="cn.tedu.entity.Car">
+			select * from car_message_bj 
+			where carname=#{carname} and price BETWEEN #{low} and #{high}
+		</select>
+		
+		<select id="search"  parameterType="cn.tedu.entity.CarSearch"  resultType="cn.tedu.entity.Car">
+			select * from car_message_bj 
+			where carname=#{carname} 
+		</select>
+				
+		<select id="searchIndexAndPrice"  parameterType="cn.tedu.entity.CarSearch"  resultType="cn.tedu.entity.Car">
+			select * from car_message_bj 
+			where price BETWEEN #{low} and #{high}
+		</select>
+		
+		<select id="searchQiTa"   resultType="cn.tedu.entity.Car">
+			select * from car_message_bj 
+			where carname &lt;&gt; '大众' and carname &lt;&gt; '宝马' and carname &lt;&gt; '奔驰' limit 1000
+		</select>
+		
+		<select id="searchQiTaAndPrice" parameterType="cn.tedu.entity.CarSearch"   resultType="cn.tedu.entity.Car">
+			select * from car_message_bj 
+			where carname &lt;&gt; '大众' and carname &lt;&gt; '宝马' and carname &lt;&gt; '奔驰'  and price BETWEEN #{low} and #{high} limit 1000
+		</select>
+		
+</mapper>
